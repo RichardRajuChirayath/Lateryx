@@ -1,0 +1,152 @@
+# Lateryx Configuration File
+# ==========================
+# Configure how Lateryx analyzes your infrastructure.
+# Place this file at the root of your repository as `lateryx.config.yml`
+
+# Version of config schema
+version: "1.0"
+
+# Define which resources are "Crown Jewels" (most sensitive)
+crown_jewels:
+  # Resources matching these tags are considered highly sensitive
+  tags:
+    - key: "Sensitivity"
+      value: "High"
+    - key: "Environment"
+      value: "Production"
+    - key: "DataClassification"
+      value: "PII"
+
+  # Resource name patterns that indicate sensitivity
+  name_patterns:
+    - "*customer*"
+    - "*pii*"
+    - "*secret*"
+    - "*credential*"
+    - "*production*"
+    - "*prod-*"
+
+  # Explicit resource addresses to mark as sensitive
+  explicit:
+    - "aws_rds_cluster.main"
+    - "aws_s3_bucket.customer_data"
+    - "aws_secretsmanager_secret.*"
+
+# Risk scoring weights (must sum to 1.0)
+risk_weights:
+  path_length: 0.3 # Shorter paths = higher risk
+  node_centrality: 0.3 # Nodes on many paths = higher risk
+  edge_permissions: 0.2 # Admin/write permissions = higher risk
+  public_exposure: 0.2 # Public resources = higher risk
+
+# Custom risk scores for resource types (0.0 to 1.0)
+# Higher score = more sensitive
+resource_scores:
+  s3: 0.7
+  rds: 0.9
+  dynamodb: 0.7
+  secretsmanager: 1.0
+  kms: 1.0
+  ec2: 0.4
+  lambda: 0.5
+  iam_role: 0.6
+  iam_user: 0.8
+  api_gateway: 0.3
+  alb: 0.2
+
+# Custom risk scores for permission types (0.0 to 1.0)
+permission_scores:
+  admin: 1.0
+  write: 0.7
+  delete: 0.8
+  read: 0.3
+  invoke: 0.5
+  assume_role: 0.7
+  public_access: 0.9
+  execute: 0.6
+
+# Analysis settings
+analysis:
+  # Maximum path length to consider (longer paths are ignored)
+  max_path_length: 15
+
+  # Maximum number of paths to enumerate before sampling
+  max_paths: 1000
+
+  # Minimum risk score to report a path (0.0 to 1.0)
+  min_risk_threshold: 0.3
+
+  # Enable IAM policy resolution (slower but more accurate)
+  resolve_iam: true
+
+  # Enable cloud state sync (requires AWS credentials)
+  sync_cloud_state: false
+
+# Severity thresholds
+severity:
+  critical: 0.8 # Score >= 0.8 is CRITICAL
+  high: 0.6 # Score >= 0.6 is HIGH
+  medium: 0.4 # Score >= 0.4 is MEDIUM
+  low: 0.0 # Score >= 0.0 is LOW
+
+# Ignore rules - paths/resources to exclude from analysis
+ignore:
+  # Resource addresses to ignore
+  resources:
+    - "aws_cloudwatch_*"
+    - "aws_flow_log.*"
+
+  # Path patterns to ignore (regex)
+  paths: []
+
+  # Tags that indicate a resource should be ignored
+  tags:
+    - key: "Lateryx"
+      value: "Ignore"
+
+# GitHub Action settings
+github:
+  # Post analysis results as PR comment
+  post_comment: true
+
+  # Fail the build on breach
+  fail_on_breach: true
+
+  # Minimum severity to fail (LOW, MEDIUM, HIGH, CRITICAL)
+  fail_severity: "HIGH"
+
+  # Add labels to PR based on risk
+  add_labels: true
+
+  # Label mappings
+  labels:
+    critical: "security-critical"
+    high: "security-high"
+    medium: "security-review"
+    low: "security-minor"
+
+# Observability integration (Immune System Loop)
+observability:
+  # Generate CloudTrail monitoring recommendations
+  cloudtrail: true
+
+  # Generate GuardDuty custom threat intel
+  guardduty: true
+
+  # Output format for monitoring manifest
+  output_format: "json" # or "terraform" to generate TF resources
+
+# Zero-Knowledge mode settings
+privacy:
+  # Enable graph tokenization for external analysis
+  tokenize: false
+
+  # Salt for tokenization (leave empty for random)
+  salt: ""
+
+  # Fields to always redact
+  redact_fields:
+    - "password"
+    - "secret"
+    - "token"
+    - "api_key"

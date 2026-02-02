@@ -88,17 +88,112 @@ jobs:
 lateryx/
 ├── src/
 │   ├── __init__.py
-│   ├── main.py          # Core graph analysis engine
-│   └── scanner.py       # Terraform/HCL parser using Checkov
+│   ├── main.py              # Core graph analysis engine
+│   ├── scanner.py           # Terraform/HCL parser using Checkov
+│   ├── plan_analyzer.py     # Terraform plan JSON parser (v1.2+)
+│   ├── iam_resolver.py      # AWS IAM effective permissions (v1.2+)
+│   ├── cloud_sync.py        # Live cloud state sync (v1.2+)
+│   ├── optimized_engine.py  # Centrality & blast radius (v1.2+)
+│   └── config.py            # Configuration loader (v1.2+)
 ├── tests/
 │   ├── scenarios/
-│   │   ├── safe/        # Secure infrastructure example
-│   │   └── hacked/      # Vulnerable infrastructure example
-│   └── test_validation.py
-├── action.yml           # GitHub Action definition
-├── Dockerfile           # Container for GitHub Action
-├── entrypoint.sh        # Action entrypoint script
+│   │   ├── safe/            # Secure infrastructure example
+│   │   └── hacked/          # Vulnerable infrastructure example
+│   ├── test_validation.py
+│   ├── test_legendary.py    # War-gaming tests
+│   └── test_enterprise.py   # Enterprise feature tests
+├── lateryx.config.example.yml  # Example configuration
+├── action.yml               # GitHub Action definition
+├── Dockerfile               # Container for GitHub Action
+├── entrypoint.sh            # Action entrypoint script
 └── requirements.txt
+```
+
+## Enterprise Features (v1.2.0)
+
+Lateryx now includes **enterprise-grade** security analysis capabilities.
+
+### 📊 Terraform Plan Analyzer
+Parse `terraform plan -json` output for accurate resource analysis. This solves the "module/variable resolution" problem by analyzing the actual planned infrastructure.
+
+```python
+from src.plan_analyzer import TerraformPlanAnalyzer
+
+analyzer = TerraformPlanAnalyzer()
+graph, changes = analyzer.parse_plan_file("tfplan.json")
+
+print(f"Resources: {len(graph.graph.nodes)}")
+print(f"Changes: {len(changes)}")
+```
+
+### 🔒 IAM Permission Resolver
+Calculates **effective permissions** by evaluating multiple policy layers:
+- Identity-based policies
+- Resource-based policies  
+- Permissions boundaries
+- Service Control Policies (SCPs)
+
+```python
+from src.iam_resolver import IAMResolver
+
+resolver = IAMResolver()
+result = resolver.evaluate_permission(
+    principal="arn:aws:iam::123456789:role/MyRole",
+    action="s3:GetObject",
+    resource="arn:aws:s3:::my-bucket/*"
+)
+print(f"Allowed: {result.allowed}, Reason: {result.reason}")
+```
+
+### ☁️ Live Cloud State Sync
+Pull live infrastructure state from AWS to identify **drift** between Terraform code and actual cloud configuration.
+
+```python
+from src.cloud_sync import AWSCloudSync, compare_live_to_plan
+
+sync = AWSCloudSync(regions=["us-east-1"])
+live_graph = sync.build_graph()
+
+drift = compare_live_to_plan(live_graph, plan_graph)
+print(f"Unmanaged resources: {len(drift['unmanaged_resources'])}")
+```
+
+### 🚀 Optimized Graph Engine
+Handle **10,000+ resource** infrastructures using centrality algorithms and intelligent path sampling.
+
+```python
+from src.optimized_engine import OptimizedGraphEngine
+
+engine = OptimizedGraphEngine(graph)
+
+# Get the most important nodes
+centrality = engine.analyze_centrality()
+
+# Calculate blast radius of a compromise
+blast = engine.get_blast_radius("ec2.web_server")
+print(f"Blast radius: {blast['blast_radius_percent']}%")
+
+# Find critical paths efficiently
+paths = engine.find_critical_paths(max_paths=100)
+```
+
+### ⚙️ Configuration System
+Customize risk scoring, define crown jewels, and configure severity thresholds via `lateryx.config.yml`.
+
+```yaml
+# lateryx.config.yml
+crown_jewels:
+  name_patterns:
+    - "*customer*"
+    - "*production*"
+
+resource_scores:
+  rds: 0.9
+  s3: 0.7
+  
+severity:
+  critical: 0.8
+  high: 0.6
 ```
 
 ## API Reference
