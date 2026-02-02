@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lateryx - Predict infrastructure attack paths using graph theory. The War-Gaming Engine for Cloud Security.">
+    <meta name="keywords" content="terraform, security, infrastructure, attack path, graph theory, AWS, DevSecOps">
+    <meta name="author" content="Lateryx Team">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Lateryx - Infrastructure Attack Path Analyzer">
+    <meta property="og:description" content="Predict attack paths before they become breaches. War-gaming engine for cloud security.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://richardrajuchirayath.github.io/Lateryx/">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Lateryx Security Engine">
+    <meta name="twitter:description" content="Graph-theory powered infrastructure security analysis">
+    
+    <title>Lateryx | Infrastructure Attack Path Analyzer</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <span class="logo-icon">🛡️</span>
+                <span class="logo-text">Lateryx</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#enterprise">Enterprise</a></li>
+                <li><a href="https://github.com/RichardRajuChirayath/Lateryx" target="_blank">GitHub</a></li>
+            </ul>
+            <a href="https://github.com/marketplace/actions/lateryx-security-analyzer" class="nav-cta" target="_blank">
+                Get Started
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge animate-fade-in">
+                <span class="badge-dot"></span>
+                Open Source Security Engine
+            </div>
+            
+            <h1 class="hero-title animate-fade-in-up">
+                Predict Attack Paths
+                <span class="gradient-text">Before They Become Breaches</span>
+            </h1>
+            
+            <p class="hero-subtitle animate-fade-in-up delay-1">
+                Lateryx uses <strong>graph theory</strong> to analyze your Terraform infrastructure 
+                and identify potential attack vectors. Stop security regressions at the PR level.
+            </p>
+            
+            <div class="hero-actions animate-fade-in-up delay-2">
+                <a href="https://github.com/marketplace/actions/lateryx-security-analyzer" class="btn btn-primary" target="_blank">
+                    <span class="btn-icon">⚡</span>
+                    Install GitHub Action
+                </a>
+                <a href="https://github.com/RichardRajuChirayath/Lateryx" class="btn btn-secondary" target="_blank">
+                    <span class="btn-icon">📖</span>
+                    View Documentation
+                </a>
+            </div>
+            
+            <div class="hero-code animate-fade-in-up delay-3">
+                <div class="code-header">
+                    <span class="code-dot red"></span>
+                    <span class="code-dot yellow"></span>
+                    <span class="code-dot green"></span>
+                    <span class="code-title">.github/workflows/security.yml</span>
+                </div>
+                <pre class="code-block"><code><span class="code-key">- uses:</span> <span class="code-value">RichardRajuChirayath/Lateryx@v1</span>
+  <span class="code-key">with:</span>
+    <span class="code-key">terraform_directory:</span> <span class="code-string">'./infrastructure'</span>
+    <span class="code-key">fail_on_breach:</span> <span class="code-string">'true'</span>
+    <span class="code-key">severity_threshold:</span> <span class="code-string">'HIGH'</span></code></pre>
+            </div>
+        </div>
+        
+        <div class="hero-visual">
+            <div class="graph-visualization">
+                <div class="graph-node node-internet">Internet</div>
+                <div class="graph-node node-alb">ALB</div>
+                <div class="graph-node node-ec2">EC2</div>
+                <div class="graph-node node-iam">IAM Role</div>
+                <div class="graph-node node-data">Protected Data</div>
+                <svg class="graph-edges">
+                    <line class="edge edge-1" x1="50%" y1="10%" x2="50%" y2="25%"></line>
+                    <line class="edge edge-2" x1="50%" y1="30%" x2="50%" y2="45%"></line>
+                    <line class="edge edge-3" x1="50%" y1="50%" x2="50%" y2="65%"></line>
+                    <line class="edge edge-4" x1="50%" y1="70%" x2="50%" y2="85%"></line>
+                </svg>
+                <div class="breach-alert">
+                    <span class="alert-icon">⚠️</span>
+                    CAUSALITY BREACH DETECTED
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-item animate-on-scroll">
+                <span class="stat-number" data-target="5">0</span>
+                <span class="stat-label">Enterprise Modules</span>
+            </div>
+            <div class="stat-item animate-on-scroll">
+                <span class="stat-number" data-target="100">0</span><span class="stat-suffix">%</span>
+                <span class="stat-label">Open Source</span>
+            </div>
+            <div class="stat-item animate-on-scroll">
+                <span class="stat-number" data-target="10000">0</span><span class="stat-suffix">+</span>
+                <span class="stat-label">Resource Scale</span>
+            </div>
+            <div class="stat-item animate-on-scroll">
+                <span class="stat-icon">🔒</span>
+                <span class="stat-label">Zero Data Collection</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="section-header">
+            <span class="section-badge">Features</span>
+            <h2 class="section-title">The <span class="gradient-text">War-Gaming Engine</span> for Infrastructure</h2>
+            <p class="section-subtitle">Beyond linting. Lateryx simulates how attackers think.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">⚔️</div>
+                <h3 class="feature-title">Shadow Path Discovery</h3>
+                <p class="feature-description">
+                    Simulate "Assume Breach" scenarios. Calculate the blast radius from any compromised node 
+                    and predict lateral movement to protected data.
+                </p>
+                <div class="feature-tag">War-Gaming</div>
+            </div>
+            
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">🔐</div>
+                <h3 class="feature-title">Zero-Knowledge Analysis</h3>
+                <p class="feature-description">
+                    Anonymize your infrastructure graph using SHA-256 tokenization. 
+                    Share with auditors without revealing resource names.
+                </p>
+                <div class="feature-tag">Privacy</div>
+            </div>
+            
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">🧬</div>
+                <h3 class="feature-title">Immune System Loop</h3>
+                <p class="feature-description">
+                    Identify "Choke Points" — nodes that sit on multiple attack paths. 
+                    Generate monitoring manifests for CloudTrail and GuardDuty.
+                </p>
+                <div class="feature-tag">Observability</div>
+            </div>
+            
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">IAM Permission Resolver</h3>
+                <p class="feature-description">
+                    Calculate effective permissions across Identity policies, Resource policies, 
+                    Boundaries, and SCPs. Eliminate false positives.
+                </p>
+                <div class="feature-tag">Enterprise</div>
+            </div>
+            
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">☁️</div>
+                <h3 class="feature-title">Live Cloud Sync</h3>
+                <p class="feature-description">
+                    Pull live AWS state and compare to Terraform. 
+                    Detect drift and manual backdoors that don't exist in code.
+                </p>
+                <div class="feature-tag">Drift Detection</div>
+            </div>
+            
+            <div class="feature-card animate-on-scroll">
+                <div class="feature-icon">🚀</div>
+                <h3 class="feature-title">Optimized Engine</h3>
+                <p class="feature-description">
+                    Handle 10,000+ resource infrastructures using centrality algorithms. 
+                    No memory explosion, no timeouts.
+                </p>
+                <div class="feature-tag">Scale</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="section-header">
+            <span class="section-badge">How It Works</span>
+            <h2 class="section-title">From <span class="gradient-text">Code to Confidence</span></h2>
+        </div>
+        
+        <div class="steps-container">
+            <div class="step animate-on-scroll">
+                <div class="step-number">01</div>
+                <div class="step-content">
+                    <h3>Graph Construction</h3>
+                    <p>Lateryx maps your infrastructure as a directed graph. Resources become nodes, permissions become edges.</p>
+                </div>
+            </div>
+            
+            <div class="step animate-on-scroll">
+                <div class="step-number">02</div>
+                <div class="step-content">
+                    <h3>Pathfinding</h3>
+                    <p>Using NetworkX algorithms, we find all paths from <code>Internet</code> to <code>ProtectedData</code>.</p>
+                </div>
+            </div>
+            
+            <div class="step animate-on-scroll">
+                <div class="step-number">03</div>
+                <div class="step-content">
+                    <h3>Change Analysis</h3>
+                    <p>When a PR is opened, we compare the "before" and "after" graphs to detect new or shortened paths.</p>
+                </div>
+            </div>
+            
+            <div class="step animate-on-scroll">
+                <div class="step-number">04</div>
+                <div class="step-content">
+                    <h3>Breach Detection</h3>
+                    <p>If your change creates a highway where there used to be a wall, Lateryx flags it as a <strong>Causality Breach</strong>.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enterprise Section -->
+    <section id="enterprise" class="enterprise">
+        <div class="enterprise-content">
+            <div class="section-header left-align">
+                <span class="section-badge">Enterprise Ready</span>
+                <h2 class="section-title">Built for <span class="gradient-text">Production Scale</span></h2>
+                <p class="section-subtitle">
+                    Lateryx isn't just a linter. It's an architectural analysis engine 
+                    designed for the most complex cloud environments.
+                </p>
+            </div>
+            
+            <ul class="enterprise-features">
+                <li class="animate-on-scroll">
+                    <span class="check-icon">✓</span>
+                    <span>Terraform Plan JSON parsing for accurate analysis</span>
+                </li>
+                <li class="animate-on-scroll">
+                    <span class="check-icon">✓</span>
+                    <span>Multi-layer IAM permission resolution</span>
+                </li>
+                <li class="animate-on-scroll">
+                    <span class="check-icon">✓</span>
+                    <span>Live AWS state synchronization</span>
+                </li>
+                <li class="animate-on-scroll">
+                    <span class="check-icon">✓</span>
+                    <span>Configurable risk scoring and crown jewels</span>
+                </li>
+                <li class="animate-on-scroll">
+                    <span class="check-icon">✓</span>
+                    <span>Centrality-based critical path identification</span>
+                </li>
+                <li class="animate-on-scroll">
+                    <span class="check-icon">✓</span>
+                    <span>Zero-knowledge mode for sensitive environments</span>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="enterprise-visual">
+            <div class="config-preview animate-on-scroll">
+                <div class="code-header">
+                    <span class="code-dot red"></span>
+                    <span class="code-dot yellow"></span>
+                    <span class="code-dot green"></span>
+                    <span class="code-title">lateryx.config.yml</span>
+                </div>
+                <pre class="code-block"><code><span class="code-key">crown_jewels:</span>
+  <span class="code-key">name_patterns:</span>
+    - <span class="code-string">"*customer*"</span>
+    - <span class="code-string">"*production*"</span>
+
+<span class="code-key">resource_scores:</span>
+  <span class="code-key">rds:</span> <span class="code-number">0.9</span>
+  <span class="code-key">s3:</span> <span class="code-number">0.7</span>
+  <span class="code-key">secretsmanager:</span> <span class="code-number">1.0</span>
+
+<span class="code-key">severity:</span>
+  <span class="code-key">critical:</span> <span class="code-number">0.8</span>
+  <span class="code-key">high:</span> <span class="code-number">0.6</span></code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-content animate-on-scroll">
+            <h2 class="cta-title">Stop Breaches at the <span class="gradient-text">Pull Request</span></h2>
+            <p class="cta-subtitle">
+                Join the shift-left security movement. Install Lateryx in your CI/CD pipeline today.
+            </p>
+            <div class="cta-actions">
+                <a href="https://github.com/marketplace/actions/lateryx-security-analyzer" class="btn btn-primary btn-large" target="_blank">
+                    <span class="btn-icon">🚀</span>
+                    Get Started Free
+                </a>
+                <a href="https://github.com/RichardRajuChirayath/Lateryx" class="btn btn-ghost" target="_blank">
+                    Star on GitHub ⭐
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <span class="logo-icon">🛡️</span>
+                <span class="logo-text">Lateryx</span>
+                <p class="footer-tagline">Built with graph theory for infrastructure security.</p>
+            </div>
+            
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#enterprise">Enterprise</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="https://github.com/RichardRajuChirayath/Lateryx" target="_blank">Documentation</a></li>
+                        <li><a href="https://github.com/RichardRajuChirayath/Lateryx/issues" target="_blank">Issues</a></li>
+                        <li><a href="https://github.com/marketplace/actions/lateryx-security-analyzer" target="_blank">Marketplace</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Lateryx. Open Source under MIT License.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
