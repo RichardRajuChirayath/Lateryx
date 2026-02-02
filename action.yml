@@ -1,72 +1,72 @@
-name: 'Lateryx Security Analyzer'
-description: 'Analyzes infrastructure changes to predict new attack paths using graph theory. Detects Causality Breaches in Terraform/HCL configurations.'
-author: 'Lateryx Team'
+name: "Lateryx Security Analyzer"
+description: "Predict infrastructure attack paths using graph theory to detect causality breaches in Terraform."
+author: "Lateryx Team"
 
 branding:
-  icon: 'shield'
-  color: 'purple'
+  icon: "shield"
+  color: "purple"
 
 inputs:
   terraform_directory:
-    description: 'Path to directory containing Terraform files'
+    description: "Path to directory containing Terraform files"
     required: false
-    default: '.'
-  
+    default: "."
+
   base_ref:
-    description: 'Git ref for the base branch (before changes)'
+    description: "Git ref for the base branch (before changes)"
     required: false
     default: ${{ github.base_ref }}
-  
+
   head_ref:
-    description: 'Git ref for the head branch (after changes)'
+    description: "Git ref for the head branch (after changes)"
     required: false
     default: ${{ github.head_ref }}
-  
+
   fail_on_breach:
-    description: 'Fail the action if any Causality Breach is detected'
+    description: "Fail the action if any Causality Breach is detected"
     required: false
-    default: 'true'
-  
+    default: "true"
+
   severity_threshold:
-    description: 'Minimum severity to trigger failure (LOW, MEDIUM, HIGH, CRITICAL)'
+    description: "Minimum severity to trigger failure (LOW, MEDIUM, HIGH, CRITICAL)"
     required: false
-    default: 'HIGH'
-  
+    default: "HIGH"
+
   output_format:
-    description: 'Output format: json, markdown, or both'
+    description: "Output format: json, markdown, or both"
     required: false
-    default: 'both'
-  
+    default: "both"
+
   github_token:
-    description: 'GitHub token for posting PR comments'
+    description: "GitHub token for posting PR comments"
     required: false
     default: ${{ github.token }}
 
 outputs:
   is_safe:
-    description: 'Whether the infrastructure change is safe (true/false)'
-  
+    description: "Whether the infrastructure change is safe (true/false)"
+
   breaches_count:
-    description: 'Number of Causality Breaches detected'
-  
+    description: "Number of Causality Breaches detected"
+
   new_paths_count:
-    description: 'Number of new attack paths created'
-  
+    description: "Number of new attack paths created"
+
   shortened_paths_count:
-    description: 'Number of attack paths that were shortened'
-  
+    description: "Number of attack paths that were shortened"
+
   highest_severity:
-    description: 'Highest severity breach detected (LOW, MEDIUM, HIGH, CRITICAL, or NONE)'
-  
+    description: "Highest severity breach detected (LOW, MEDIUM, HIGH, CRITICAL, or NONE)"
+
   report_json:
-    description: 'Path to the JSON report file'
-  
+    description: "Path to the JSON report file"
+
   report_markdown:
-    description: 'Path to the Markdown report file'
+    description: "Path to the Markdown report file"
 
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: "docker"
+  image: "Dockerfile"
   args:
     - ${{ inputs.terraform_directory }}
     - ${{ inputs.base_ref }}
