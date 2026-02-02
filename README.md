@@ -163,7 +163,7 @@ Lateryx is designed for the most regulated industries (FinTech, HealthTech, Gov)
 
 ## License
 
-MIT License - See [LICENSE](LICENSE) for details.
+GNU Affero General Public License v3.0 (AGPL-3.0) - See [LICENSE](LICENSE) for details.
 
 ---
 
