@@ -53,18 +53,24 @@ class AttackPath:
 
 @dataclass
 class CausalityBreach:
-    """Represents a detected security breach in infrastructure changes."""
+    """Represents a detected security breach in infrastructure changes with intelligence."""
     breach_type: str  # "NEW_PATH" | "SHORTENED_PATH" | "WIDENED_ACCESS"
     severity: RiskLevel
     before_path: Optional[AttackPath]
     after_path: AttackPath
     description: str
     remediation: str
+    impact_summary: str = ""
+    compliance_violations: List[str] = field(default_factory=list)
+    legal_exposure: str = ""
     
     def to_dict(self) -> dict:
         return {
             "breach_type": self.breach_type,
             "severity": self.severity.value,
+            "impact_summary": self.impact_summary,
+            "compliance_violations": self.compliance_violations,
+            "legal_exposure": self.legal_exposure,
             "before_path": self.before_path.to_dict() if self.before_path else None,
             "after_path": self.after_path.to_dict(),
             "description": self.description,
@@ -478,18 +484,30 @@ class LaterxyAnalyzer:
         before_paths = before.find_all_attack_paths()
         after_paths = after.find_all_attack_paths()
         
+        # Initialize Intelligence
+        from .intelligence import get_intelligence
+        intel = get_intelligence()
+        
         breaches = []
         
         # Detect new paths
         new_paths = self._find_new_paths(before_paths, after_paths)
         for path in new_paths:
+            # Analyze impact for the masses
+            sensitive_node = next((n for n in path.path if after.graph.nodes[n].get('contains_sensitive_data')), path.path[-1])
+            res_type = after.graph.nodes[sensitive_node].get('type', 'unknown')
+            biz_intel = intel.translate_breach("NEW_PATH", res_type, sensitive_node)
+
             breach = CausalityBreach(
                 breach_type="NEW_PATH",
                 severity=self._classify_severity(path, is_new=True),
                 before_path=None,
                 after_path=path,
                 description=f"New attack path created: {' → '.join(path.path)}",
-                remediation=self._generate_remediation(path, "NEW_PATH")
+                remediation=biz_intel.remediation_for_humans,
+                impact_summary=biz_intel.impact_summary,
+                compliance_violations=biz_intel.compliance_violations,
+                legal_exposure=biz_intel.legal_exposure
             )
             breaches.append(breach)
         

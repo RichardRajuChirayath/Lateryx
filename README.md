@@ -1,14 +1,8 @@
-# Lateryx Security Engine
+# Lateryx: Cloud Safety & Compliance on Autopilot
 
-> Analyzes infrastructure changes to predict new attack paths using graph theory.
+> Automated security audits and risk assessment for infrastructure-as-code.
 
-[![GitHub Action](https://img.shields.io/badge/GitHub-Action-blue?logo=github)](https://github.com/marketplace/actions/lateryx-security-analyzer)
-[![Python 3.11+](https://img.shields.io/badge/Python-3.11+-green?logo=python)](https://python.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-## Overview
-
-Lateryx is a **security analysis engine** that uses **graph theory** to identify potential attack paths in cloud infrastructure. It detects **"Causality Breaches"** - security regressions introduced by infrastructure changes.
+Lateryx is an **intelligence engine** that translates complex cloud changes into clear business risks. It ensures your infrastructure is always compliant (SOC2, HIPAA) and safe-to-ship without needing a security expert on every PR.
 
 ### Core Concept
 
@@ -288,11 +282,13 @@ python tests/test_validation.py
 # *** ALL VALIDATIONS PASSED! ***
 ```
 
-## Constraints
+## Privacy & Legal Promise
 
-- **Privacy First**: Never accesses PII or user data
-- **Config Only**: Only analyzes architecture and configuration (Terraform/HCL)
-- **Graph Math**: Uses NetworkX for reliable pathfinding algorithms
+Lateryx is designed for the most regulated industries (FinTech, HealthTech, Gov).
+- **No Data Collection**: Lateryx runs entirely within your CI/CD environment. We never see your code or infrastructure.
+- **Architecture Only**: We analyze structural relationship definitions (IAM, Network), never actual customer data or PII.
+- **Zero-Knowledge Path**: Our tokenization module allows you to anonymize your entire graph before storage or external audit.
+- **Legal Confidence**: By mapping to SOC2/HIPAA controls, Lateryx provides an automated paper trail for compliance audits.
 
 ## Technology Stack
 
