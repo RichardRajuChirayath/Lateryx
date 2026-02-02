@@ -14,180 +14,44 @@ Lateryx is an **intelligence engine** that translates complex cloud changes into
 | **Target** | `ProtectedData` - sensitive data that must be protected |
 | **Detection** | New or shortened attack paths = **Causality Breach** |
 
-## Legendary Features (v1.1.0)
+## Why Lateryx?
 
-Lateryx has evolved into a **War-Gaming Engine** for infrastructure.
+Traditional security scanners look for static misconfigurations (e.g., "Is this bucket public?"). Lateryx looks for **Architectural Causality**. 
 
-### ⚔️ Shadow Path Discovery (War-Gaming)
-Simulate "Assume Breach" scenarios. Lateryx can predict an attacker's lateral movement and "Blast Radius" from any compromised node.
-*   **Use Case:** *"If our Web Server is hacked, what is the shortest path to our Customer DB?"*
+By analyzing the relationship between your entire cloud stack, Lateryx identifies paths that a simple scanner would miss. It’s the difference between checking if a door is locked and checking if a window on the 3rd floor can be reached via a ladder in the garden.
 
-### 🔐 Zero-Knowledge Analysis
-Anonymize your infrastructure graph using SHA-256 tokenization. Audit your security architecture without revealing internal resource names or sensitive metadata.
-*   **Use Case:** Sending infrastructure graphs to third-party auditors or external AI without data leakage.
+## Key Capabilities
 
-### 🧬 Immune System Loop
-Lateryx identifies "Choke Points"—critical nodes that sit on multiple attack paths. It generates a monitoring manifest for high-fidelity logging (CloudTrail/GuardDuty).
-*   **Use Case:** Prioritizing observability on the 5% of nodes that represent 90% of your risk.
+Lateryx is a comprehensive security and compliance engine.
 
-## How It Works
+- **✅ Automated Compliance Audits**: Maps infrastructure changes directly to SOC2, HIPAA, and ISO27001 controls.
+- **📢 Human-Readable Impact**: Translates security math into plain English: "This PR lets anyone read your database."
+- **🛡️ The 'Safe-to-Ship' Light**: Gives developers 100% confidence to deploy without security bottlenecks.
+- **🔒 Zero-Knowledge Analysis**: Anonymizes your entire infrastructure graph for privacy-first auditing.
+- **🧬 Immune System Loop**: Identifies critical "Choke Points" in your architecture for high-fidelity monitoring.
+- **📊 Enterprise IAM Resolver**: Calculates effective permissions across complex policy layers (Boundaries, SCPs, etc.).
 
-1. **Graph Construction**: Maps all infrastructure components as nodes, permissions as edges
-2. **Pathfinding**: Uses NetworkX algorithms to find all paths from `Internet` to `ProtectedData`
-3. **Change Analysis**: Compares "before" and "after" infrastructure graphs
-4. **Scoring**: Flags new paths or shortened paths as security risks
+## Usage & Integration
 
-## Quick Start
-
-### Installation
-
-```bash
-pip install -r requirements.txt
-```
-
-### CLI Usage
-
-```bash
-# Analyze infrastructure changes
-python -m src.main --before before.json --after after.json
-
-# With failure on breach
-python -m src.main --before before.json --after after.json --fail-on-breach
-```
-
-### As a GitHub Action
+### As a GitHub Action (Recommended)
+Add Lateryx to your CI/CD pipeline to catch regressions before they merge.
 
 ```yaml
-name: Security Analysis
-
-on: [pull_request]
-
-jobs:
-  lateryx:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Run Lateryx Security Analysis
-        uses: lateryx/lateryx@v1
-        with:
-          terraform_directory: './infrastructure'
-          fail_on_breach: 'true'
-          severity_threshold: 'HIGH'
+- uses: RichardRajuChirayath/Lateryx@v1
+  with:
+    terraform_directory: './infrastructure'
+    fail_on_breach: 'true'
+    severity_threshold: 'HIGH'
 ```
 
-## Project Structure
-
-```
-lateryx/
-├── src/
-│   ├── __init__.py
-│   ├── main.py              # Core graph analysis engine
-│   ├── scanner.py           # Terraform/HCL parser using Checkov
-│   ├── plan_analyzer.py     # Terraform plan JSON parser (v1.2+)
-│   ├── iam_resolver.py      # AWS IAM effective permissions (v1.2+)
-│   ├── cloud_sync.py        # Live cloud state sync (v1.2+)
-│   ├── optimized_engine.py  # Centrality & blast radius (v1.2+)
-│   └── config.py            # Configuration loader (v1.2+)
-├── tests/
-│   ├── scenarios/
-│   │   ├── safe/            # Secure infrastructure example
-│   │   └── hacked/          # Vulnerable infrastructure example
-│   ├── test_validation.py
-│   ├── test_legendary.py    # War-gaming tests
-│   └── test_enterprise.py   # Enterprise feature tests
-├── lateryx.config.example.yml  # Example configuration
-├── action.yml               # GitHub Action definition
-├── Dockerfile               # Container for GitHub Action
-├── entrypoint.sh            # Action entrypoint script
-└── requirements.txt
-```
-
-## Enterprise Features (v1.2.0)
-
-Lateryx now includes **enterprise-grade** security analysis capabilities.
-
-### 📊 Terraform Plan Analyzer
-Parse `terraform plan -json` output for accurate resource analysis. This solves the "module/variable resolution" problem by analyzing the actual planned infrastructure.
-
-```python
-from src.plan_analyzer import TerraformPlanAnalyzer
-
-analyzer = TerraformPlanAnalyzer()
-graph, changes = analyzer.parse_plan_file("tfplan.json")
-
-print(f"Resources: {len(graph.graph.nodes)}")
-print(f"Changes: {len(changes)}")
-```
-
-### 🔒 IAM Permission Resolver
-Calculates **effective permissions** by evaluating multiple policy layers:
-- Identity-based policies
-- Resource-based policies  
-- Permissions boundaries
-- Service Control Policies (SCPs)
-
-```python
-from src.iam_resolver import IAMResolver
-
-resolver = IAMResolver()
-result = resolver.evaluate_permission(
-    principal="arn:aws:iam::123456789:role/MyRole",
-    action="s3:GetObject",
-    resource="arn:aws:s3:::my-bucket/*"
-)
-print(f"Allowed: {result.allowed}, Reason: {result.reason}")
-```
-
-### ☁️ Live Cloud State Sync
-Pull live infrastructure state from AWS to identify **drift** between Terraform code and actual cloud configuration.
-
-```python
-from src.cloud_sync import AWSCloudSync, compare_live_to_plan
-
-sync = AWSCloudSync(regions=["us-east-1"])
-live_graph = sync.build_graph()
-
-drift = compare_live_to_plan(live_graph, plan_graph)
-print(f"Unmanaged resources: {len(drift['unmanaged_resources'])}")
-```
-
-### 🚀 Optimized Graph Engine
-Handle **10,000+ resource** infrastructures using centrality algorithms and intelligent path sampling.
-
-```python
-from src.optimized_engine import OptimizedGraphEngine
-
-engine = OptimizedGraphEngine(graph)
-
-# Get the most important nodes
-centrality = engine.analyze_centrality()
-
-# Calculate blast radius of a compromise
-blast = engine.get_blast_radius("ec2.web_server")
-print(f"Blast radius: {blast['blast_radius_percent']}%")
-
-# Find critical paths efficiently
-paths = engine.find_critical_paths(max_paths=100)
-```
-
-### ⚙️ Configuration System
-Customize risk scoring, define crown jewels, and configure severity thresholds via `lateryx.config.yml`.
+### Enterprise Configuration
+Customize Lateryx for your specific environment using `lateryx.config.yml`.
 
 ```yaml
-# lateryx.config.yml
 crown_jewels:
   name_patterns:
     - "*customer*"
     - "*production*"
-
-resource_scores:
-  rds: 0.9
-  s3: 0.7
-  
-severity:
-  critical: 0.8
-  high: 0.6
 ```
 
 ## API Reference
