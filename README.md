@@ -20,6 +20,22 @@ Lateryx is a **security analysis engine** that uses **graph theory** to identify
 | **Target** | `ProtectedData` - sensitive data that must be protected |
 | **Detection** | New or shortened attack paths = **Causality Breach** |
 
+## Legendary Features (v1.1.0)
+
+Lateryx has evolved into a **War-Gaming Engine** for infrastructure.
+
+### ⚔️ Shadow Path Discovery (War-Gaming)
+Simulate "Assume Breach" scenarios. Lateryx can predict an attacker's lateral movement and "Blast Radius" from any compromised node.
+*   **Use Case:** *"If our Web Server is hacked, what is the shortest path to our Customer DB?"*
+
+### 🔐 Zero-Knowledge Analysis
+Anonymize your infrastructure graph using SHA-256 tokenization. Audit your security architecture without revealing internal resource names or sensitive metadata.
+*   **Use Case:** Sending infrastructure graphs to third-party auditors or external AI without data leakage.
+
+### 🧬 Immune System Loop
+Lateryx identifies "Choke Points"—critical nodes that sit on multiple attack paths. It generates a monitoring manifest for high-fidelity logging (CloudTrail/GuardDuty).
+*   **Use Case:** Prioritizing observability on the 5% of nodes that represent 90% of your risk.
+
 ## How It Works
 
 1. **Graph Construction**: Maps all infrastructure components as nodes, permissions as edges

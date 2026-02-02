@@ -12,12 +12,14 @@ Core Logic:
 4. Scoring: Flag new or shortened paths as HIGH RISK
 """
 
+import hashlib
 import json
 import sys
+import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Optional
+from typing import Dict, List, Optional, Set, Tuple
 
 import networkx as nx
 
@@ -299,6 +301,105 @@ class InfrastructureGraph:
             )
         except (nx.NetworkXNoPath, nx.NodeNotFound):
             return None
+
+    def simulate_compromise(self, node_id: str) -> List[AttackPath]:
+        """
+        LEGENDARY: Shadow Path Discovery (War-Gaming).
+        Simulates what an attacker can reach if this specific node is compromised.
+        
+        Returns:
+            List of paths from the compromised node to ProtectedData.
+        """
+        if node_id not in self.graph:
+            return []
+            
+        paths = []
+        try:
+            all_paths = nx.all_simple_paths(
+                self.graph,
+                source=node_id,
+                target=self.PROTECTED_DATA,
+                cutoff=10
+            )
+            for path in all_paths:
+                risk_score = self._calculate_path_risk(path)
+                paths.append(AttackPath(
+                    source=node_id,
+                    target=self.PROTECTED_DATA,
+                    path=path,
+                    length=len(path) - 1,
+                    risk_score=risk_score
+                ))
+        except (nx.NetworkXNoPath, nx.NodeNotFound):
+            pass
+            
+        return sorted(paths, key=lambda p: p.risk_score, reverse=True)
+
+    def tokenize_graph(self) -> Tuple['InfrastructureGraph', Dict[str, str]]:
+        """
+        LEGENDARY: Zero-Knowledge "Private" Analysis.
+        Anonymizes all node names using salt+hash to protect sensitive naming conventions.
+        
+        Returns:
+            Tuple of (Anonymized Graph, Mapping Dictionary)
+        """
+        tokenized = InfrastructureGraph(name=f"anon-{self.name}")
+        tokenized.graph.clear()
+        
+        mapping = {}
+        salt = str(uuid.uuid4())
+        
+        def get_anon_id(original: str) -> str:
+            if original in mapping:
+                return mapping[original]
+            if original in [self.INTERNET, self.PROTECTED_DATA]:
+                mapping[original] = original
+                return original
+            
+            # Create a deterministic but opaque ID
+            hasher = hashlib.sha256()
+            hasher.update(f"{salt}{original}".encode())
+            anon_id = f"node-{hasher.hexdigest()[:12]}"
+            mapping[original] = anon_id
+            return anon_id
+
+        # Copy nodes with anonymized IDs
+        for node, data in self.graph.nodes(data=True):
+            anon_id = get_anon_id(node)
+            tokenized.graph.add_node(anon_id, **data)
+            
+        # Copy edges
+        for u, v, data in self.graph.edges(data=True):
+            tokenized.graph.add_edge(get_anon_id(u), get_anon_id(v), **data)
+            
+        return tokenized, {v: k for k, v in mapping.items()}
+
+    def get_critical_observability_nodes(self) -> List[Dict]:
+        """
+        LEGENDARY: Immune System Loop.
+        Identifies nodes that appear in multiple attack paths.
+        These are "Choke Points" that should be monitored via CloudTrail/GuardDuty.
+        """
+        all_paths = self.find_all_attack_paths()
+        node_frequency = {}
+        
+        for p in all_paths:
+            # Skip Internet and ProtectedData
+            for node in p.path[1:-1]:
+                node_frequency[node] = node_frequency.get(node, 0) + 1
+        
+        # Sort by frequency (highest impact first)
+        critical_nodes = []
+        for node, freq in sorted(node_frequency.items(), key=lambda x: x[1], reverse=True):
+            node_data = self.graph.nodes[node]
+            critical_nodes.append({
+                "node_id": node,
+                "type": node_data.get("type"),
+                "path_involvement_count": freq,
+                "observability_priority": "CRITICAL" if freq > (len(all_paths) * 0.5) else "HIGH"
+            })
+            
+        return critical_nodes
     
     def has_path_to_protected_data(self) -> bool:
         """Check if any path exists from Internet to ProtectedData."""
