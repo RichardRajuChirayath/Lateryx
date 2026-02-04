@@ -36,11 +36,19 @@ class RiskIntelligence:
         "NETWORK": "A firewall (Security Group) was opened too wide. It's like leaving the front door of your office unlocked."
     }
 
+    REMEDIATION_TEMPLATES = {
+        "S3": "Remove the `public-read` ACL or the wildcard `Principal: *` from your S3 bucket policy. Use CloudFront with OAI for public assets.",
+        "RDS": "Change `publicly_accessible = true` to `false` in your Terraform. Ensure the DB is in a private subnet with no 0.0.0.0/0 ingress.",
+        "IAM": "Apply the Principle of Least Privilege. Replace `AdministratorAccess` with specific actions (e.g., `s3:PutObject`) only for needed resources.",
+        "NETWORK": "Tighten your Security Group rules. Replace `0.0.0.0/0` with your VPC CIDR or specific IP ranges using a bastion host or VPN."
+    }
+
     def translate_breach(self, breach_type: str, resource_type: str, affected_resource: str) -> BusinessImpact:
-        """Translates a technical breach into business-friendly risk language."""
+        """Translates a technical breach into business-friendly risk language and remediation steps."""
         
         impact = self.IMPACT_TEMPLATES.get(resource_type.upper(), "Architectural shift detected that bypasses existing security guardrails.")
         violations = self.COMPLIANCE_MAP.get(f"{resource_type.upper()}_EXPOSED", ["Internal Security Policy Violation"])
+        remediation = self.REMEDIATION_TEMPLATES.get(resource_type.upper(), f"Restrict access to '{affected_resource}' to the minimum required VPC or IAM scope.")
         
         # Determine Legal Exposure
         legal = "LOW"
@@ -54,7 +62,7 @@ class RiskIntelligence:
             impact_summary=impact,
             compliance_violations=violations,
             legal_exposure=legal,
-            remediation_for_humans=f"Restrict access to '{affected_resource}' locally. Ensure only internal services can talk to it."
+            remediation_for_humans=remediation
         )
 
 def get_intelligence():
