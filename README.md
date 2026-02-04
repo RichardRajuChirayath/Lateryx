@@ -208,5 +208,5 @@ GNU Affero General Public License v3.0 (AGPL-3.0) - See [LICENSE](LICENSE) for d
 ---
 
 Built with graph theory for infrastructure security.
-Test PR for Lateryx extension
+
 
