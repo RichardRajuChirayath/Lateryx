@@ -58,8 +58,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             chrome.action.setIcon({
                 tabId,
                 path: {
-                    16: 'icons/icon-16.png',
-                    32: 'icons/icon-32.png'
+                    "128": "icons/icon-128.png"
                 }
             });
         }

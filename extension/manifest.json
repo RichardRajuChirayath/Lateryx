@@ -39,6 +39,15 @@
   "background": {
     "service_worker": "background.js"
   },
+  "commands": {
+    "toggle-lateryx": {
+      "suggested_key": {
+        "default": "Alt+L",
+        "mac": "Command+Shift+L"
+      },
+      "description": "Toggle Lateryx security status badge"
+    }
+  },
   "web_accessible_resources": [
     {
       "resources": [
