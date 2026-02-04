@@ -44,6 +44,38 @@ Add Lateryx to your CI/CD pipeline to catch regressions before they merge.
     severity_threshold: 'HIGH'
 ```
 
+### Local Development (CLI)
+
+Scan your infrastructure during development, before you even push:
+
+```bash
+# Install Lateryx locally
+pip install -e .
+
+# Scan a directory
+lateryx scan ./infrastructure
+
+# Get JSON output for integrations
+lateryx scan ./infrastructure --format json
+
+# Block on security issues (for scripts)
+lateryx scan ./infrastructure --fail-on-breach
+```
+
+### Pre-Commit Hook (Automatic Local Scans)
+
+Block insecure commits before they happen:
+
+```bash
+# Copy the hook to your repo
+cp scripts/pre-commit .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+
+# Now every commit is automatically scanned!
+git commit -m "Add new feature"
+# ❌ COMMIT BLOCKED: Security issues detected...
+```
+
 ### Enterprise Configuration
 Customize Lateryx for your specific environment using `lateryx.config.yml`.
 
