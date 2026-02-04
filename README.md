@@ -24,12 +24,20 @@ By analyzing the relationship between your entire cloud stack, Lateryx identifie
 
 Lateryx is a comprehensive security and compliance engine.
 
-- **✅ Automated Compliance Audits**: Maps infrastructure changes directly to SOC2, HIPAA, and ISO27001 controls.
+### Core Features
+- **✅ Automated Compliance Audits**: Maps changes to SOC2, HIPAA, ISO27001, **PCI DSS, NIST 800-53, and CIS Benchmarks**.
 - **📢 Human-Readable Impact**: Translates security math into plain English: "This PR lets anyone read your database."
 - **🛡️ The 'Safe-to-Ship' Light**: Gives developers 100% confidence to deploy without security bottlenecks.
-- **🔒 Zero-Knowledge Analysis**: Anonymizes your entire infrastructure graph for privacy-first auditing.
-- **🧬 Immune System Loop**: Identifies critical "Choke Points" in your architecture for high-fidelity monitoring.
-- **📊 Enterprise IAM Resolver**: Calculates effective permissions across complex policy layers (Boundaries, SCPs, etc.).
+- **🔧 Auto-Remediation**: Automatically generates code patches to fix security issues with one click.
+
+### Multi-Cloud & Kubernetes
+- **☁️ Multi-Cloud Support**: Full support for **AWS, Azure, and GCP** Terraform resources.
+- **⎈ Kubernetes Security**: Scan K8s manifests for privileged containers, RBAC issues, and network policies.
+
+### Enterprise Features
+- **📊 IAM Permission Resolver**: Calculates effective permissions across complex policy layers.
+- **📈 Historical Trends**: Track your security posture over time with compliance scores.
+- **🔒 Zero-Knowledge Mode**: Anonymizes your infrastructure graph for privacy-first auditing.
 
 ## Usage & Integration
 

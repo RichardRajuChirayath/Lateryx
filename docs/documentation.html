@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lateryx Documentation - Cloud Safety & Compliance on Autopilot</title>
+    <meta name="description"
+        content="Complete documentation for Lateryx, the automated cloud security and compliance tool.">
+    <link rel="stylesheet" href="styles.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        /* Documentation-specific styles */
+        .docs-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .docs-sidebar {
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 1.5rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .docs-sidebar h2 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+        }
+
+        .docs-sidebar nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .docs-sidebar nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .docs-sidebar nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            display: block;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .docs-sidebar nav a:hover,
+        .docs-sidebar nav a.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--primary-color);
+        }
+
+        .docs-content {
+            padding: 3rem 4rem;
+            max-width: 900px;
+        }
+
+        .docs-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .docs-content h2 {
+            font-size: 1.75rem;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .docs-content h3 {
+            font-size: 1.25rem;
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .docs-content p {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .docs-content pre {
+            background: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        .docs-content code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .docs-content :not(pre)>code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            color: var(--accent-color);
+        }
+
+        .callout {
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .callout-info {
+            background: rgba(96, 165, 250, 0.1);
+            border-color: #60a5fa;
+        }
+
+        .callout-warning {
+            background: rgba(251, 191, 36, 0.1);
+            border-color: #fbbf24;
+        }
+
+        .callout-success {
+            background: rgba(52, 211, 153, 0.1);
+            border-color: #34d399;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .docs-container {
+                grid-template-columns: 1fr;
+            }
+
+            .docs-sidebar {
+                display: none;
+            }
+
+            .docs-content {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="docs-container">
+        <!-- Sidebar Navigation -->
+        <aside class="docs-sidebar">
+            <a href="index.html"
+                style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; text-decoration: none;">
+                <span style="font-size: 1.5rem;">🛡️</span>
+                <span style="font-weight: 700; font-size: 1.2rem; color: var(--text-light);">Lateryx</span>
+            </a>
+
+            <nav>
+                <h2>Getting Started</h2>
+                <ul>
+                    <li><a href="#introduction">Introduction</a></li>
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="#quickstart">Quick Start</a></li>
+                </ul>
+
+                <h2>Usage</h2>
+                <ul>
+                    <li><a href="#github-action">GitHub Action</a></li>
+                    <li><a href="#cli">CLI Scanner</a></li>
+                    <li><a href="#pre-commit">Pre-Commit Hook</a></li>
+                </ul>
+
+                <h2>Features</h2>
+                <ul>
+                    <li><a href="#multi-cloud">Multi-Cloud Support</a></li>
+                    <li><a href="#compliance">Compliance Frameworks</a></li>
+                    <li><a href="#auto-remediation">Auto-Remediation</a></li>
+                    <li><a href="#kubernetes">Kubernetes Security</a></li>
+                    <li><a href="#trends">Historical Trends</a></li>
+                </ul>
+
+                <h2>Configuration</h2>
+                <ul>
+                    <li><a href="#config-file">Configuration File</a></li>
+                    <li><a href="#crown-jewels">Crown Jewels</a></li>
+                    <li><a href="#custom-rules">Custom Rules</a></li>
+                </ul>
+
+                <h2>API Reference</h2>
+                <ul>
+                    <li><a href="#api-graph">InfrastructureGraph</a></li>
+                    <li><a href="#api-analyzer">LaterxyAnalyzer</a></li>
+                    <li><a href="#api-intelligence">RiskIntelligence</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <h1 id="introduction">🛡️ Lateryx Documentation</h1>
+            <p class="lead">Cloud Safety & Compliance on Autopilot. Lateryx analyzes your infrastructure-as-code to
+                detect security regressions before they reach production.</p>
+
+            <div class="callout callout-info">
+                <strong>What makes Lateryx different?</strong><br>
+                Traditional scanners find static misconfigurations. Lateryx uses <strong>graph theory</strong> to find
+                attack paths that connect multiple resources—the kind of issues that lead to real breaches.
+            </div>
+
+            <h2 id="installation">Installation</h2>
+
+            <h3>Option 1: GitHub Action (Recommended)</h3>
+            <p>Add Lateryx to your CI/CD pipeline:</p>
+            <pre><code>- uses: RichardRajuChirayath/Lateryx@v1
+  with:
+    terraform_directory: './infrastructure'
+    fail_on_breach: 'true'
+    severity_threshold: 'HIGH'</code></pre>
+
+            <h3>Option 2: Local Installation</h3>
+            <pre><code># Clone the repository
+git clone https://github.com/RichardRajuChirayath/Lateryx.git
+cd Lateryx
+
+# Install as a package
+pip install -e .
+
+# Verify installation
+lateryx --version</code></pre>
+
+            <h3>Option 3: Docker</h3>
+            <pre><code>docker pull ghcr.io/richardrajuchirayath/lateryx:latest
+docker run -v $(pwd):/workspace lateryx scan /workspace/infrastructure</code></pre>
+
+            <h2 id="quickstart">Quick Start</h2>
+            <p>Scan your Terraform directory in 30 seconds:</p>
+            <pre><code># Install
+pip install -e .
+
+# Scan
+lateryx scan ./infrastructure
+
+# Output:
+# ╔════════════════════════════════════════════════════════════╗
+# ║  ✅ SAFE TO COMMIT                                         ║
+# ╚════════════════════════════════════════════════════════════╝</code></pre>
+
+            <h2 id="github-action">GitHub Action</h2>
+            <p>The GitHub Action is the recommended way to use Lateryx. It automatically scans every Pull Request and
+                posts detailed security reports.</p>
+
+            <h3>Full Configuration</h3>
+            <pre><code>name: Security Scan
+
+on:
+  pull_request:
+    paths:
+      - 'infrastructure/**'
+      - 'terraform/**'
+
+jobs:
+  lateryx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - uses: RichardRajuChirayath/Lateryx@v1
+        with:
+          terraform_directory: './infrastructure'
+          fail_on_breach: 'true'
+          severity_threshold: 'HIGH'  # CRITICAL, HIGH, MEDIUM, LOW
+          output_format: 'both'       # json, markdown, both
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}</code></pre>
+
+            <h3>Inputs</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Input</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>terraform_directory</code></td>
+                        <td><code>.</code></td>
+                        <td>Path to Terraform files</td>
+                    </tr>
+                    <tr>
+                        <td><code>fail_on_breach</code></td>
+                        <td><code>true</code></td>
+                        <td>Fail the workflow if issues are found</td>
+                    </tr>
+                    <tr>
+                        <td><code>severity_threshold</code></td>
+                        <td><code>HIGH</code></td>
+                        <td>Minimum severity to fail on</td>
+                    </tr>
+                    <tr>
+                        <td><code>output_format</code></td>
+                        <td><code>both</code></td>
+                        <td>Output format (json, markdown, both)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="cli">CLI Scanner</h2>
+            <p>Use the CLI for local development and scripting:</p>
+
+            <pre><code># Basic scan
+lateryx scan ./infrastructure
+
+# JSON output for CI/CD
+lateryx scan ./infrastructure --format json
+
+# Fail on issues (for scripts)
+lateryx scan ./infrastructure --fail-on-breach --severity CRITICAL</code></pre>
+
+            <h2 id="pre-commit">Pre-Commit Hook</h2>
+            <p>Block insecure commits before they enter your repository:</p>
+
+            <pre><code># Install the hook
+cp scripts/pre-commit .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+
+# Now every commit is checked!
+git commit -m "Add infrastructure changes"
+# ❌ COMMIT BLOCKED: Security issues detected...</code></pre>
+
+            <h2 id="multi-cloud">Multi-Cloud Support</h2>
+            <p>Lateryx supports AWS, Azure, and GCP Terraform resources:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cloud</th>
+                        <th>Resources</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AWS</td>
+                        <td>S3, RDS, IAM, EC2, Lambda, VPC, etc.</td>
+                        <td>✅ Full Support</td>
+                    </tr>
+                    <tr>
+                        <td>Azure</td>
+                        <td>Storage, SQL, Key Vault, VMs, AKS, etc.</td>
+                        <td>✅ Full Support</td>
+                    </tr>
+                    <tr>
+                        <td>GCP</td>
+                        <td>Cloud Storage, Cloud SQL, GKE, IAM, etc.</td>
+                        <td>✅ Full Support</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="compliance">Compliance Frameworks</h2>
+            <p>Lateryx maps security findings to industry compliance frameworks:</p>
+
+            <ul>
+                <li><strong>SOC 2</strong> - Trust Service Criteria (CC6, CC7)</li>
+                <li><strong>HIPAA</strong> - Security Rule (§164.312)</li>
+                <li><strong>PCI DSS v4.0</strong> - Requirements 1-12</li>
+                <li><strong>NIST 800-53</strong> - AC, AU, CA, CM, IA, SC controls</li>
+                <li><strong>CIS Benchmarks</strong> - AWS, Azure, GCP</li>
+                <li><strong>GDPR</strong> - Articles 25, 32, 33</li>
+            </ul>
+
+            <h2 id="auto-remediation">Auto-Remediation</h2>
+            <p>Lateryx can automatically generate fixes for common security issues:</p>
+
+            <div class="callout callout-success">
+                <strong>High-Confidence Fixes:</strong> Lateryx only auto-applies fixes with 80%+ confidence.
+                Lower-confidence fixes are suggested for manual review.
+            </div>
+
+            <pre><code>from src.auto_remediation import get_auto_remediator
+
+remediator = get_auto_remediator()
+patches = remediator.analyze_file("main.tf", content)
+
+for patch in patches:
+    print(f"Fix: {patch.description}")
+    print(f"Confidence: {patch.confidence * 100}%")</code></pre>
+
+            <h2 id="kubernetes">Kubernetes Security</h2>
+            <p>Scan Kubernetes manifests for security issues:</p>
+
+            <pre><code>from src.kubernetes import get_kubernetes_scanner
+
+scanner = get_kubernetes_scanner()
+resources, findings = scanner.scan_directory("./k8s/")
+
+for finding in findings:
+    print(f"[{finding['severity']}] {finding['description']}")</code></pre>
+
+            <h3>Detected Issues</h3>
+            <ul>
+                <li>Privileged containers</li>
+                <li>Host network/PID namespace sharing</li>
+                <li>Running as root</li>
+                <li>Missing resource limits</li>
+                <li>Default service account usage</li>
+                <li>Wildcard RBAC permissions</li>
+                <li>Missing NetworkPolicies</li>
+            </ul>
+
+            <h2 id="trends">Historical Trends</h2>
+            <p>Track your security posture over time:</p>
+
+            <pre><code>from src.trends import get_trend_tracker
+
+tracker = get_trend_tracker(".")
+tracker.record_scan(scan_result, commit_sha="abc123")
+
+summary = tracker.get_trend_summary(days=30)
+print(f"Trend: {summary['status']}")
+print(f"Score: {summary['current_score']}%")</code></pre>
+
+            <h2 id="config-file">Configuration File</h2>
+            <p>Create a <code>lateryx.config.yml</code> in your repository root:</p>
+
+            <pre><code>version: "1.0"
+
+# Define your most critical resources
+crown_jewels:
+  name_patterns:
+    - "*production*"
+    - "*customer*"
+    - "*payment*"
+  types:
+    - aws_rds_instance
+    - aws_s3_bucket
+
+# Customize risk scoring
+risk_weights:
+  public_exposure: 1.0
+  sensitive_data: 0.9
+  admin_access: 0.8
+
+# Severity thresholds
+thresholds:
+  fail_on: HIGH
+  warn_on: MEDIUM</code></pre>
+
+            <hr>
+
+            <p style="text-align: center; margin-top: 3rem; color: var(--text-muted);">
+                Built with ❤️ by the Lateryx Team<br>
+                <a href="https://github.com/RichardRajuChirayath/Lateryx">GitHub</a> ·
+                <a href="index.html">Landing Page</a>
+            </p>
+        </main>
+    </div>
+
+    <script>
+        // Highlight current section in sidebar
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    document.querySelectorAll('.docs-sidebar nav a').forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === '#' + entry.target.id) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('h1[id], h2[id]').forEach(heading => {
+            observer.observe(heading);
+        });
+    </script>
+</body>
+
+</html>
