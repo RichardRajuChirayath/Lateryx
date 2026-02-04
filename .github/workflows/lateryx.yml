@@ -1,0 +1,25 @@
+name: Lateryx Security Analysis
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  lateryx-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Lateryx Security Scan
+        uses: RichardRajuChirayath/Lateryx@v2
+        with:
+          terraform_directory: "."
+          fail_on_breach: "true"
+          severity_threshold: "HIGH"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
