@@ -1,0 +1,129 @@
+/* Lateryx Content Script - Injected Styles for GitHub Pages */
+
+.lateryx-badge-container {
+    display: inline-flex;
+    margin-right: 8px;
+}
+
+.lateryx-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.lateryx-badge:hover {
+    transform: translateY(-1px);
+}
+
+/* Loading state */
+.lateryx-badge.loading {
+    background: linear-gradient(135deg, #2d333b, #22272e);
+    color: #8b949e;
+    border-color: #30363d;
+}
+
+.lateryx-badge.loading .lateryx-icon {
+    animation: lateryx-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes lateryx-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Safe state */
+.lateryx-badge.safe {
+    background: linear-gradient(135deg, #238636, #196127);
+    color: #ffffff;
+    border-color: #2ea043;
+}
+
+.lateryx-badge.safe:hover {
+    background: linear-gradient(135deg, #2ea043, #238636);
+    box-shadow: 0 4px 12px rgba(46, 160, 67, 0.3);
+}
+
+/* Unsafe state */
+.lateryx-badge.unsafe {
+    background: linear-gradient(135deg, #da3633, #b62324);
+    color: #ffffff;
+    border-color: #f85149;
+}
+
+.lateryx-badge.unsafe:hover {
+    background: linear-gradient(135deg, #f85149, #da3633);
+    box-shadow: 0 4px 12px rgba(248, 81, 73, 0.3);
+}
+
+/* Not configured state */
+.lateryx-badge.not-configured {
+    background: linear-gradient(135deg, #30363d, #21262d);
+    color: #8b949e;
+    border-color: #484f58;
+}
+
+.lateryx-badge.not-configured:hover {
+    border-color: #58a6ff;
+    color: #58a6ff;
+}
+
+/* Error state */
+.lateryx-badge.error {
+    background: linear-gradient(135deg, #30363d, #21262d);
+    color: #f85149;
+    border-color: #30363d;
+}
+
+.lateryx-icon {
+    font-size: 14px;
+}
+
+.lateryx-text {
+    white-space: nowrap;
+}
+
+/* Tooltip styles */
+.lateryx-tooltip {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #f0f6fc;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+}
+
+.lateryx-badge:hover .lateryx-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* PR Checks enhancement */
+.merge-status-item[data-check*="lateryx"],
+.merge-status-item[data-check*="security"] {
+    border-left: 3px solid #a371f7 !important;
+}

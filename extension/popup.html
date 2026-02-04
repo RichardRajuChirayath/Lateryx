@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lateryx Security</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+    <div class="popup-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🛡️</span>
+                <span class="logo-text">Lateryx</span>
+            </div>
+            <span class="version">v2.0</span>
+        </header>
+
+        <!-- Status Section -->
+        <section id="status-section" class="status-section">
+            <div id="status-indicator" class="status-indicator loading">
+                <div class="status-icon">⏳</div>
+                <div class="status-text">
+                    <h2>Checking...</h2>
+                    <p>Analyzing this page</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PR Info (shown on GitHub PR pages) -->
+        <section id="pr-section" class="pr-section hidden">
+            <div class="pr-header">
+                <h3 id="pr-title">Pull Request</h3>
+                <span id="pr-number" class="pr-number">#000</span>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric">
+                    <span class="metric-value" id="metric-findings">0</span>
+                    <span class="metric-label">Findings</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value" id="metric-critical">0</span>
+                    <span class="metric-label">Critical</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value" id="metric-compliance">100%</span>
+                    <span class="metric-label">Compliant</span>
+                </div>
+            </div>
+
+            <div id="findings-list" class="findings-list">
+                <!-- Findings will be injected here -->
+            </div>
+        </section>
+
+        <!-- Not on GitHub -->
+        <section id="not-github-section" class="not-github-section hidden">
+            <div class="empty-state">
+                <div class="empty-icon">📂</div>
+                <h3>Not on GitHub</h3>
+                <p>Navigate to a GitHub Pull Request to see security analysis.</p>
+            </div>
+        </section>
+
+        <!-- Actions -->
+        <section class="actions-section">
+            <a href="https://github.com/RichardRajuChirayath/Lateryx" target="_blank" class="action-btn secondary">
+                <span>📖</span> Documentation
+            </a>
+            <button id="refresh-btn" class="action-btn primary">
+                <span>🔄</span> Refresh
+            </button>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Cloud Safety & Compliance on Autopilot</p>
+            <a href="https://richardrajuchirayath.github.io/Lateryx/" target="_blank">lateryx.io</a>
+        </footer>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>
