@@ -235,7 +235,7 @@
 
             <h3>Option 1: GitHub Action (Recommended)</h3>
             <p>Add Lateryx to your CI/CD pipeline:</p>
-            <pre><code>- uses: RichardRajuChirayath/Lateryx@v1
+            <pre><code>- uses: RichardRajuChirayath/Lateryx@v2
   with:
     terraform_directory: './infrastructure'
     fail_on_breach: 'true'
@@ -290,7 +290,7 @@ jobs:
         with:
           fetch-depth: 0
       
-      - uses: RichardRajuChirayath/Lateryx@v1
+      - uses: RichardRajuChirayath/Lateryx@v2
         with:
           terraform_directory: './infrastructure'
           fail_on_breach: 'true'

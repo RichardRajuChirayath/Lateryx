@@ -45,7 +45,7 @@ Lateryx is a comprehensive security and compliance engine.
 Add Lateryx to your CI/CD pipeline to catch regressions before they merge.
 
 ```yaml
-- uses: RichardRajuChirayath/Lateryx@v1
+- uses: RichardRajuChirayath/Lateryx@v2
   with:
     terraform_directory: './infrastructure'
     fail_on_breach: 'true'
