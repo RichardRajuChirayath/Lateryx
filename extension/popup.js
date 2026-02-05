@@ -16,25 +16,60 @@ class LaterxyPopup {
 
     async init() {
         this.refreshBtn.addEventListener('click', () => this.refresh());
+
+        // Setup link button
+        const linkBtn = document.getElementById('link-repo-btn');
+        if (linkBtn) {
+            linkBtn.addEventListener('click', () => this.saveMapping());
+        }
+
         await this.checkCurrentPage();
+    }
+
+    async saveMapping() {
+        const input = document.getElementById('custom-repo');
+        const repoPath = input.value.trim();
+
+        if (!repoPath.includes('/')) {
+            alert('Please use owner/repo format (e.g. owner/repo)');
+            return;
+        }
+
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        const domain = new URL(tab.url).hostname;
+
+        const data = await chrome.storage.local.get('lateryx_mappings');
+        const mappings = data.lateryx_mappings || {};
+        mappings[domain] = repoPath;
+
+        await chrome.storage.local.set({ lateryx_mappings: mappings });
+        alert(`Linked ${domain} to ${repoPath}`);
+        this.refresh();
     }
 
     async checkCurrentPage() {
         try {
-            // Get current tab
             const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
             const url = tab.url;
 
-            // Check if on GitHub PR page
             const prMatch = url.match(/github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/);
 
             if (prMatch) {
                 const [, owner, repo, prNumber] = prMatch;
-                await this.loadPRStatus(owner, repo, prNumber, tab.id);
-            } else if (url.includes('github.com')) {
-                this.showNotPR();
+                await this.loadPRStatus(owner, repo, prNumber);
             } else {
-                this.showNotGithub();
+                const domain = new URL(url).hostname;
+                const data = await chrome.storage.local.get('lateryx_mappings');
+                const mappings = data.lateryx_mappings || {};
+
+                if (mappings[domain]) {
+                    const [owner, repo] = mappings[domain].split('/');
+                    await this.loadGlobalStatus(owner, repo);
+                } else if (url.includes('github.com')) {
+                    this.showNotPR();
+                } else {
+                    this.showNotGithub();
+                }
             }
         } catch (error) {
             console.error('Error checking page:', error);
@@ -42,58 +77,55 @@ class LaterxyPopup {
         }
     }
 
-    async loadPRStatus(owner, repo, prNumber, tabId) {
+    async loadPRStatus(owner, repo, prNumber) {
         this.showLoading();
-
         try {
-            // Try to get Lateryx check status from GitHub
             const checkStatus = await this.getCheckStatus(owner, repo, prNumber);
-
-            // Update UI with PR info
             document.getElementById('pr-title').textContent = `${owner}/${repo}`;
             document.getElementById('pr-number').textContent = `#${prNumber}`;
 
             if (checkStatus) {
                 this.showPRStatus(checkStatus);
             } else {
-                // No Lateryx check found - show setup prompt
                 this.showNoLateryx();
             }
         } catch (error) {
-            console.error('Error loading PR status:', error);
             this.showError('Could not load PR status');
+        }
+    }
+
+    async loadGlobalStatus(owner, repo) {
+        this.showLoading();
+        try {
+            const checkStatus = await this.getLatestCheckStatus(owner, repo);
+            document.getElementById('pr-title').textContent = `${owner}/${repo}`;
+            document.getElementById('pr-number').textContent = `Main Branch`;
+
+            if (checkStatus) {
+                this.showPRStatus(checkStatus);
+            } else {
+                this.showNoLateryx();
+            }
+        } catch (error) {
+            this.showError('Could not load repo status');
         }
     }
 
     async getCheckStatus(owner, repo, prNumber) {
         try {
-            // Get PR head SHA
-            const prResponse = await fetch(
-                `https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}`,
-                { headers: this.getHeaders() }
-            );
-
+            const prResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}`, { headers: this.getHeaders() });
             if (!prResponse.ok) return null;
-
             const prData = await prResponse.json();
             const headSha = prData.head.sha;
 
-            // Get check runs for this commit
-            const checksResponse = await fetch(
-                `https://api.github.com/repos/${owner}/${repo}/commits/${headSha}/check-runs`,
-                { headers: this.getHeaders() }
-            );
-
+            const checksResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits/${headSha}/check-runs`, { headers: this.getHeaders() });
             if (!checksResponse.ok) return null;
-
             const checksData = await checksResponse.json();
 
-            // Find Lateryx check
             const laterxyCheck = checksData.check_runs.find(check =>
                 check.name.toLowerCase().includes('lateryx') ||
                 check.name.toLowerCase().includes('security')
             );
-
             if (!laterxyCheck) return null;
 
             return {
@@ -101,21 +133,34 @@ class LaterxyPopup {
                 findings: this.parseFindings(laterxyCheck.output),
                 url: laterxyCheck.html_url
             };
-        } catch (error) {
-            console.error('API Error:', error);
-            return null;
-        }
+        } catch (error) { return null; }
+    }
+
+    async getLatestCheckStatus(owner, repo) {
+        try {
+            const checksResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits/main/check-runs`, { headers: this.getHeaders() });
+            if (!checksResponse.ok) return null;
+            const checksData = await checksResponse.json();
+
+            const laterxyCheck = checksData.check_runs.find(check =>
+                check.name.toLowerCase().includes('lateryx') ||
+                check.name.toLowerCase().includes('security')
+            );
+            if (!laterxyCheck) return null;
+
+            return {
+                status: laterxyCheck.conclusion || laterxyCheck.status,
+                findings: this.parseFindings(laterxyCheck.output),
+                url: laterxyCheck.html_url
+            };
+        } catch (error) { return null; }
     }
 
     getHeaders() {
-        // Check for stored GitHub token
-        return {
-            'Accept': 'application/vnd.github.v3+json'
-        };
+        return { 'Accept': 'application/vnd.github.v3+json' };
     }
 
     parseFindings(output) {
-        // Parse Lateryx output from check run
         if (!output || !output.text) {
             return { total: 0, critical: 0, high: 0, items: [] };
         }
@@ -123,23 +168,15 @@ class LaterxyPopup {
         const text = output.text;
         const findings = { total: 0, critical: 0, high: 0, items: [] };
 
-        // Parse breach counts from output
         const breachMatch = text.match(/Breaches Detected[:\s]+(\d+)/i);
-        if (breachMatch) {
-            findings.total = parseInt(breachMatch[1], 10);
-        }
+        if (breachMatch) findings.total = parseInt(breachMatch[1], 10);
 
         const criticalMatch = text.match(/CRITICAL[:\s]+(\d+)/i);
-        if (criticalMatch) {
-            findings.critical = parseInt(criticalMatch[1], 10);
-        }
+        if (criticalMatch) findings.critical = parseInt(criticalMatch[1], 10);
 
         const highMatch = text.match(/HIGH[:\s]+(\d+)/i);
-        if (highMatch) {
-            findings.high = parseInt(highMatch[1], 10);
-        }
+        if (highMatch) findings.high = parseInt(highMatch[1], 10);
 
-        // Extract individual findings
         const findingMatches = text.matchAll(/\[(CRITICAL|HIGH|MEDIUM|LOW)\]\s+(.+?)(?=\n|$)/gi);
         for (const match of findingMatches) {
             findings.items.push({
@@ -147,14 +184,11 @@ class LaterxyPopup {
                 description: match[2].trim()
             });
         }
-
         return findings;
     }
 
     showPRStatus(checkStatus) {
         const isSafe = checkStatus.status === 'success' || checkStatus.findings.total === 0;
-
-        // Update status indicator
         this.statusIndicator.className = `status-indicator ${isSafe ? 'safe' : 'unsafe'}`;
         this.statusIndicator.innerHTML = `
             <div class="status-icon">${isSafe ? '✅' : '⚠️'}</div>
@@ -164,7 +198,6 @@ class LaterxyPopup {
             </div>
         `;
 
-        // Update metrics
         document.getElementById('metric-findings').textContent = checkStatus.findings.total;
         document.getElementById('metric-critical').textContent = checkStatus.findings.critical;
 
@@ -172,10 +205,8 @@ class LaterxyPopup {
             Math.max(0, 100 - (checkStatus.findings.critical * 20) - (checkStatus.findings.high * 10));
         document.getElementById('metric-compliance').textContent = `${complianceScore}%`;
 
-        // Populate findings list
         const findingsList = document.getElementById('findings-list');
         findingsList.innerHTML = '';
-
         checkStatus.findings.items.slice(0, 5).forEach(finding => {
             const item = document.createElement('div');
             item.className = 'finding-item';
@@ -186,7 +217,6 @@ class LaterxyPopup {
             findingsList.appendChild(item);
         });
 
-        // Show PR section
         this.prSection.classList.remove('hidden');
         this.notGithubSection.classList.add('hidden');
     }
@@ -200,12 +230,9 @@ class LaterxyPopup {
                 <p>Add Lateryx GitHub Action to this repo</p>
             </div>
         `;
-
-        // Update metrics to show setup needed
         document.getElementById('metric-findings').textContent = '-';
         document.getElementById('metric-critical').textContent = '-';
         document.getElementById('metric-compliance').textContent = '-';
-
         this.prSection.classList.remove('hidden');
         this.notGithubSection.classList.add('hidden');
     }
@@ -219,7 +246,6 @@ class LaterxyPopup {
                 <p>Navigate to a PR to see analysis</p>
             </div>
         `;
-
         this.prSection.classList.add('hidden');
         this.notGithubSection.classList.add('hidden');
     }
@@ -233,7 +259,6 @@ class LaterxyPopup {
                 <p>Visit a GitHub repository</p>
             </div>
         `;
-
         this.prSection.classList.add('hidden');
         this.notGithubSection.classList.remove('hidden');
     }
@@ -265,7 +290,6 @@ class LaterxyPopup {
     }
 }
 
-// Initialize popup
 document.addEventListener('DOMContentLoaded', () => {
     new LaterxyPopup();
 });
