@@ -169,25 +169,39 @@ class LaterxyContentScript {
     }
 
     async getGitHubCheckStatus(owner, repo, prNumber) {
-        // Re-using existing logic...
-        // Fetch PR, Get Head SHA, Get Check Runs...
-        // For brevity in this artifact, reusing simplified logic:
         try {
-            const prData = await (await fetch(`https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}`)).json();
-            const headSha = prData.head.sha;
-            const checksData = await (await fetch(`https://api.github.com/repos/${owner}/${repo}/commits/${headSha}/check-runs`)).json();
+            const prResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}`);
+            if (!prResponse.ok) return null;
+            const prData = await prResponse.json();
 
-            const check = checksData.check_runs.find(c => c.name.toLowerCase().includes('lateryx'));
+            const headSha = prData.head.sha;
+            const checksResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits/${headSha}/check-runs`);
+            if (!checksResponse.ok) return null;
+            const checksData = await checksResponse.json();
+
+            const check = checksData.check_runs.find(c =>
+                c.name.toLowerCase().includes('lateryx') ||
+                c.name.toLowerCase().includes('security-scan')
+            );
+
             if (!check) return null;
 
             let findings = 0;
             if (check.output && check.output.text) {
-                const match = check.output.text.match(/Breaches Detected[:\s]+(\d+)/i);
+                const match = check.output.text.match(/Breaches Detected[:\s]+(\d+)/i) ||
+                    check.output.text.match(/Breaches[:\s]+(\d+)/i);
                 if (match) findings = parseInt(match[1], 10);
             }
 
-            return { isSafe: check.conclusion === 'success', findings, url: check.html_url };
-        } catch { return null; }
+            return {
+                isSafe: check.conclusion === 'success' || (check.status === 'completed' && findings === 0),
+                findings,
+                url: check.html_url
+            };
+        } catch (e) {
+            console.error('Lateryx: Error fetching GitHub status', e);
+            return null;
+        }
     }
 }
 
