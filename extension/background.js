@@ -53,8 +53,11 @@ function updateExtensionBadge(status, tabId) {
 // Listen for tab updates to check for GitHub pages
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === 'complete' && tab.url) {
-        if (tab.url.includes('github.com') && tab.url.includes('/pull/')) {
-            // On a PR page - icon becomes active
+        const isGitHub = tab.url.includes('github.com') && tab.url.includes('/pull/');
+        const isLocalhost = tab.url.includes('localhost') || tab.url.includes('127.0.0.1');
+
+        if (isGitHub || isLocalhost) {
+            // On a PR page or Localhost - icon becomes active
             chrome.action.setIcon({
                 tabId,
                 path: {

@@ -1,191 +1,194 @@
 /**
  * Lateryx Browser Extension - Content Script
- * Injects security status badges directly into GitHub PR pages
+ * Supports:
+ * 1. GitHub PR pages (Checks GitHub API)
+ * 2. Localhost pages (Checks local Lateryx server)
  */
 
 class LaterxyContentScript {
     constructor() {
         this.badgeInjected = false;
+        this.devServerUrl = 'http://localhost:9991/status';
         this.init();
     }
 
     init() {
-        // Wait for page to fully load
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.onPageLoad());
         } else {
             this.onPageLoad();
         }
 
-        // Watch for dynamic content changes (GitHub uses Turbo)
         this.observePageChanges();
     }
 
     onPageLoad() {
-        // Check if we're on a PR page
-        if (this.isPRPage()) {
-            this.injectSecurityBadge();
+        if (this.isGitHubPR()) {
+            this.injectGitHubBadge();
+        } else if (this.isLocalhost()) {
+            this.injectLocalhostBadge();
         }
     }
 
-    isPRPage() {
-        return window.location.pathname.match(/\/pull\/\d+/);
+    isGitHubPR() {
+        return window.location.hostname === 'github.com' &&
+            window.location.pathname.match(/\/pull\/\d+/);
+    }
+
+    isLocalhost() {
+        return window.location.hostname === 'localhost' ||
+            window.location.hostname === '127.0.0.1';
     }
 
     observePageChanges() {
-        // GitHub uses Turbo for navigation, so we need to watch for changes
-        const observer = new MutationObserver((mutations) => {
-            if (this.isPRPage() && !this.badgeInjected) {
-                this.injectSecurityBadge();
+        // GitHub uses Turbo, Localhost might use React/Next.js hydration
+        const observer = new MutationObserver(() => {
+            if (this.isGitHubPR() && !this.badgeInjected) {
+                this.injectGitHubBadge();
             }
+            // For localhost, we execute once on load usually, but could re-check
         });
 
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-
-        // Also listen for Turbo navigation events
+        observer.observe(document.body, { childList: true, subtree: true });
         document.addEventListener('turbo:load', () => {
             this.badgeInjected = false;
-            if (this.isPRPage()) {
-                this.injectSecurityBadge();
-            }
+            if (this.isGitHubPR()) this.injectGitHubBadge();
         });
     }
 
-    async injectSecurityBadge() {
-        // Find the PR header area
+    // --- GitHub Logic ---
+
+    async injectGitHubBadge() {
         const prHeader = document.querySelector('.gh-header-show');
         if (!prHeader || this.badgeInjected) return;
 
-        // Create the Lateryx badge container
-        const badgeContainer = document.createElement('div');
-        badgeContainer.id = 'lateryx-badge';
-        badgeContainer.className = 'lateryx-badge-container';
-        badgeContainer.innerHTML = `
-            <div class="lateryx-badge loading">
-                <span class="lateryx-icon">🛡️</span>
-                <span class="lateryx-text">Checking security...</span>
-            </div>
-        `;
-
-        // Find a good insertion point
+        const badge = this.createBadgeElement();
         const actionsContainer = prHeader.querySelector('.gh-header-actions');
-        if (actionsContainer) {
-            actionsContainer.prepend(badgeContainer);
-        } else {
-            prHeader.appendChild(badgeContainer);
-        }
+
+        if (actionsContainer) actionsContainer.prepend(badge.container);
+        else prHeader.appendChild(badge.container);
 
         this.badgeInjected = true;
-
-        // Fetch and update status
-        await this.updateBadgeStatus(badgeContainer);
+        await this.updateGitHubStatus(badge.element);
     }
 
-    async updateBadgeStatus(container) {
+    async updateGitHubStatus(badgeElement) {
         try {
-            // Parse PR info from URL
             const match = window.location.pathname.match(/\/([^/]+)\/([^/]+)\/pull\/(\d+)/);
             if (!match) return;
-
             const [, owner, repo, prNumber] = match;
 
-            // Get check status
-            const status = await this.getCheckStatus(owner, repo, prNumber);
-
-            const badge = container.querySelector('.lateryx-badge');
-
-            if (status === null) {
-                // Lateryx not configured
-                badge.className = 'lateryx-badge not-configured';
-                badge.innerHTML = `
-                    <span class="lateryx-icon">🔧</span>
-                    <span class="lateryx-text">Add Lateryx</span>
-                `;
-            } else if (status.isSafe) {
-                badge.className = 'lateryx-badge safe';
-                badge.innerHTML = `
-                    <span class="lateryx-icon">✅</span>
-                    <span class="lateryx-text">Safe to Ship</span>
-                `;
-            } else {
-                badge.className = 'lateryx-badge unsafe';
-                badge.innerHTML = `
-                    <span class="lateryx-icon">⚠️</span>
-                    <span class="lateryx-text">${status.findings} Issues</span>
-                `;
-            }
-
-            // Add click handler
-            badge.addEventListener('click', () => {
-                if (status && status.url) {
-                    window.open(status.url, '_blank');
-                }
-            });
-
-        } catch (error) {
-            console.error('Lateryx: Error updating badge', error);
-            const badge = container.querySelector('.lateryx-badge');
-            badge.className = 'lateryx-badge error';
-            badge.innerHTML = `
-                <span class="lateryx-icon">❌</span>
-                <span class="lateryx-text">Error</span>
-            `;
+            // Fetch status (logic from previous version)
+            const status = await this.getGitHubCheckStatus(owner, repo, prNumber);
+            this.updateBadgeUI(badgeElement, status);
+        } catch (e) {
+            this.setBadgeError(badgeElement);
         }
     }
 
-    async getCheckStatus(owner, repo, prNumber) {
+    // --- Localhost Logic ---
+
+    async injectLocalhostBadge() {
+        if (document.getElementById('lateryx-dev-overlay')) return;
+
+        // For localhost, we inject a floating badge in the bottom-right
+        const container = document.createElement('div');
+        container.id = 'lateryx-dev-overlay';
+        container.className = 'lateryx-overlay';
+        container.innerHTML = `
+            <div class="lateryx-badge loading">
+                <span class="lateryx-icon">🛡️</span>
+                <span class="lateryx-text">Lateryx Dev</span>
+            </div>
+        `;
+        document.body.appendChild(container);
+
+        // Check local server status
+        setInterval(() => this.checkLocalServer(container), 5000); // Poll every 5s
+        this.checkLocalServer(container);
+    }
+
+    async checkLocalServer(container) {
+        const badge = container.querySelector('.lateryx-badge');
         try {
-            // Get PR data
-            const prResponse = await fetch(
-                `https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}`
-            );
+            const response = await fetch(this.devServerUrl);
+            if (!response.ok) throw new Error('Server offline');
 
-            if (!prResponse.ok) return null;
+            const data = await response.json();
 
-            const prData = await prResponse.json();
+            if (data.is_safe) {
+                badge.className = 'lateryx-badge safe';
+                badge.innerHTML = `<span class="lateryx-icon">✅</span><span class="lateryx-text">Infra Secure</span>`;
+            } else {
+                badge.className = 'lateryx-badge unsafe';
+                const count = data.findings ? data.findings.length : 0;
+                badge.innerHTML = `<span class="lateryx-icon">⚠️</span><span class="lateryx-text">${count} Issues</span>`;
+            }
+        } catch (e) {
+            // Server probably not running
+            badge.className = 'lateryx-badge not-configured';
+            badge.innerHTML = `<span class="lateryx-icon">💤</span><span class="lateryx-text">Sentinel Offline</span>`;
+            badge.title = "Run 'lateryx serve' to activate real-time checking";
+        }
+    }
+
+    // --- Helpers ---
+
+    createBadgeElement() {
+        const container = document.createElement('div');
+        container.className = 'lateryx-badge-container';
+        container.innerHTML = `
+            <div class="lateryx-badge loading">
+                <span class="lateryx-icon">🛡️</span>
+                <span class="lateryx-text">Checking...</span>
+            </div>
+        `;
+        return { container, element: container.querySelector('.lateryx-badge') };
+    }
+
+    updateBadgeUI(badge, status) {
+        if (!status) {
+            badge.className = 'lateryx-badge not-configured';
+            badge.innerHTML = `<span class="lateryx-icon">🔧</span><span class="lateryx-text">Add Lateryx</span>`;
+        } else if (status.isSafe) {
+            badge.className = 'lateryx-badge safe';
+            badge.innerHTML = `<span class="lateryx-icon">✅</span><span class="lateryx-text">Safe to Ship</span>`;
+        } else {
+            badge.className = 'lateryx-badge unsafe';
+            badge.innerHTML = `<span class="lateryx-icon">⚠️</span><span class="lateryx-text">${status.findings} Issues</span>`;
+        }
+
+        if (status && status.url) {
+            badge.onclick = () => window.open(status.url, '_blank');
+        }
+    }
+
+    setBadgeError(badge) {
+        badge.className = 'lateryx-badge error';
+        badge.innerHTML = `<span class="lateryx-icon">❌</span><span class="lateryx-text">Error</span>`;
+    }
+
+    async getGitHubCheckStatus(owner, repo, prNumber) {
+        // Re-using existing logic...
+        // Fetch PR, Get Head SHA, Get Check Runs...
+        // For brevity in this artifact, reusing simplified logic:
+        try {
+            const prData = await (await fetch(`https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}`)).json();
             const headSha = prData.head.sha;
+            const checksData = await (await fetch(`https://api.github.com/repos/${owner}/${repo}/commits/${headSha}/check-runs`)).json();
 
-            // Get check runs
-            const checksResponse = await fetch(
-                `https://api.github.com/repos/${owner}/${repo}/commits/${headSha}/check-runs`
-            );
+            const check = checksData.check_runs.find(c => c.name.toLowerCase().includes('lateryx'));
+            if (!check) return null;
 
-            if (!checksResponse.ok) return null;
-
-            const checksData = await checksResponse.json();
-
-            // Find Lateryx check
-            const laterxyCheck = checksData.check_runs.find(check =>
-                check.name.toLowerCase().includes('lateryx') ||
-                check.name.toLowerCase().includes('security-scan')
-            );
-
-            if (!laterxyCheck) return null;
-
-            const isSafe = laterxyCheck.conclusion === 'success';
-
-            // Parse findings count
             let findings = 0;
-            if (laterxyCheck.output && laterxyCheck.output.text) {
-                const match = laterxyCheck.output.text.match(/Breaches[:\s]+(\d+)/i);
+            if (check.output && check.output.text) {
+                const match = check.output.text.match(/Breaches Detected[:\s]+(\d+)/i);
                 if (match) findings = parseInt(match[1], 10);
             }
 
-            return {
-                isSafe,
-                findings,
-                url: laterxyCheck.html_url
-            };
-
-        } catch (error) {
-            console.error('Lateryx: API error', error);
-            return null;
-        }
+            return { isSafe: check.conclusion === 'success', findings, url: check.html_url };
+        } catch { return null; }
     }
 }
 
-// Initialize content script
 new LaterxyContentScript();

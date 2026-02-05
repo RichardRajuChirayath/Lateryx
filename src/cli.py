@@ -262,12 +262,8 @@ Examples:
         help="Minimum severity to fail on (default: HIGH)"
     )
     
-    # Version command
-    parser.add_argument(
-        "--version", "-v",
-        action="version",
-        version="Lateryx 1.2.0"
-    )
+    # Serve command
+    serve_parser = subparsers.add_parser("serve", help="Start local security sentinel server")
     
     args = parser.parse_args()
     
@@ -279,6 +275,9 @@ Examples:
             severity_threshold=args.severity
         )
         sys.exit(exit_code)
+    elif args.command == "serve":
+        from .dev_server import start_server
+        start_server()
     else:
         parser.print_help()
         sys.exit(0)
